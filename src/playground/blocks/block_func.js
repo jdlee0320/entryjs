@@ -378,12 +378,11 @@ module.exports = {
                         const func = Entry.variableContainer.getFunction(this.block.getFuncId());
                         this.funcCode = func.content;
                         this.funcExecutor = this.funcCode.raiseEvent('funcDef', entity)[0];
-                        this.funcExecutor.register.params = this.getParams();
+                        this.funcExecutor.register.params = this.values;
                         this.funcExecutor.register.paramMap = func.paramMap;
                         this.funcExecutor.parentExecutor = this.executor;
                         this.funcExecutor.isFuncExecutor = true;
                         this.funcExecutor.localVariables = _cloneDeep(func.localVariables);
-                        func.funcExecutor = this.funcExecutor;
                     }
 
                     const { promises } = this.funcExecutor.execute();
@@ -399,6 +398,8 @@ module.exports = {
                             this.funcCode.removeExecutor(this.funcExecutor);
                             return Entry.STATIC.BREAK;
                         }
+                    } else {
+                        this.funcCode.removeExecutor(this.funcExecutor);
                     }
 
                     Entry.callStackLength--;
@@ -450,12 +451,11 @@ module.exports = {
                         const func = Entry.variableContainer.getFunction(this.block.getFuncId());
                         this.funcCode = func.content;
                         this.funcExecutor = this.funcCode.raiseEvent('funcDef', entity)[0];
-                        this.funcExecutor.register.params = this.getParams();
+                        this.funcExecutor.register.params = this.values;
                         this.funcExecutor.register.paramMap = func.paramMap;
                         this.funcExecutor.parentExecutor = this.executor;
                         this.funcExecutor.isFuncExecutor = true;
                         this.funcExecutor.localVariables = _cloneDeep(func.localVariables);
-                        func.funcExecutor = this.funcExecutor;
                     }
 
                     const { promises } = this.funcExecutor.execute();
@@ -468,11 +468,10 @@ module.exports = {
                                 promises
                             );
                         } else {
-                            return Entry.Code.funcValueRestExecute(
-                                this.funcCode,
-                                this.funcExecutor
-                            );
+                            return Entry.Code.funcRestExecute(this.funcCode, this.funcExecutor);
                         }
+                    } else {
+                        this.funcCode.removeExecutor(this.funcExecutor);
                     }
 
                     Entry.callStackLength--;
